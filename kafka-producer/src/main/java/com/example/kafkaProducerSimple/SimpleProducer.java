@@ -18,15 +18,27 @@ public class SimpleProducer {
 
         Properties configs = new Properties();
         configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());    // 메시지 키 String으로 직렬화
+        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());  // 메시지 값 String으로 직렬화
 
+        /*
+         * KafkaProducer 인스턴스 생성
+         * KafkaProducer<메시지 키 직렬화 타입, 메시지 값 직렬화 타입>으로 선언
+         */
         KafkaProducer<String, String> producer = new KafkaProducer<>(configs);
 
         String messageValue = "testMessage";
+
+        /*
+         * ProducerRecord는 필수값으로 Topic 이름과 메시지 값을 받는다.
+         * ProducerRecord는 오프셋이 없다.
+         * 카프카 브로커의 리더 파티션에 저장될 때 레코드의 오프셋이 지정된다.
+         */
         ProducerRecord<String, String> record = new ProducerRecord<>(TOPIC_NAME, messageValue);
-        producer.send(record);
+
+        producer.send(record);  // 내부적으로는 Accumulator이 동작해 배치 단위로 레코드 전송
         logger.info("{}", record);
+
         producer.flush();
         producer.close();
     }
