@@ -109,7 +109,7 @@ public class CustomPartitioner  implements Partitioner {
 ```
 
 **실습**
-* code를 실행한 뒤 아래 명령을 통해 전송된 레코드를 확인할 수 있다.
+* [code](https://github.com/twoosky/learning-kafka/blob/main/kafka-producer/src/main/java/com/example/kafkaProducerCustomPartitioner/ProducerWithCustomPartitioner.java)를 실행한 뒤 아래 명령을 통해 전송된 레코드를 확인할 수 있다.
 * --partition 옵션을 통해 2번 파티션의 레코드를 조회해보자.
 ```bash
 $ kafka-console-consumer.sh \
@@ -121,11 +121,11 @@ $ kafka-console-consumer.sh \
 Pangyo
 ```
 
-## 5. 레코드의 전송 결과를 확인하는 프로듀서
+## 5. 레코드의 전송 결과를 확인하는 Producer
 * KafkaProducer의 send() 메서드는 Future 객체를 반환한다.
 * Future는 RecordMetadata의 비동기 결과를 담은 객체로 ProducerRecord가 카프카 브로커에 정상적으로 적재되었는지에 대한 데이터가 포함되어 있다.
 * RecordMetadata에는 *토픽 이름, 파티션 번호, 오프셋 번호* 가 담겨 있다.
-* 아래와 같이 get() 메서드를 사용하면 프로듀서로 보낸 데이터의 결과를 동기적으로 가져올 수 있다.
+* 아래와 같이 get() 메서드를 사용하면 프로듀서로 보낸 데이터의 결과를 동기적으로 가져올 수 있다. [code](https://github.com/twoosky/learning-kafka/blob/main/kafka-producer/src/main/java/com/example/kafkaProducerSyncCallback/ProducerWithSyncCallback.java)
 ```java
 ProducerRecord<String, String> record = new ProducerRecord<>(TOPIC_NAME, "Pangyo", "Pangyo");
 
@@ -135,4 +135,11 @@ logger.info(metadata.toString());
 ```
 [main] INFO com.example.kafkaProducerSyncCallback.ProducerWithSyncCallback - test-7@0
 ```
-> 기본 acks 옵션은 -1(all)임. 만약 acks 옵션을 0으로 주면 리더 파티션에 데이터가 정상적으로 적재되었는지 확인하지 않기 때문에 오프셋 번호가 -1로 반환된다.
+* 기본 acks 옵션은 -1(all)이다.
+* 만약 acks 옵션을 0으로 주면 리더 파티션에 데이터가 정상적으로 적재되었는지 확인하지 않기 때문에 오프셋 번호가 -1로 반환된다.
+
+## 6. producer의 안전한 종료
+* 프로듀서를 안전하게 종료하기 위해서는 close() 메서드를 사용하여 Accumulator에 저장되어 있는 모든 데이터를 카프카 클러스터로 전송해야 한다.
+```java
+producer.close();
+```
