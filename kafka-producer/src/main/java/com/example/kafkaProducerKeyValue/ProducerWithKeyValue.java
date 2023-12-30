@@ -19,7 +19,8 @@ public class ProducerWithKeyValue {
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(configs);
 
-        ProducerRecord<String, String> record = new ProducerRecord<>(TOPIC_NAME, "Pangyo", "Pangyo");
+        // ProducerRecord 생성 시 토픽 이름, 메시지 키, 메시지 값을 순서대로 파라미터로 추가
+        ProducerRecord<String, String> record = new ProducerRecord<>(TOPIC_NAME, "Seoul", "Soongsil");
         producer.send(record);
         ProducerRecord<String, String> record2 = new ProducerRecord<>(TOPIC_NAME, "Busan", "Busan");
         producer.send(record2);
